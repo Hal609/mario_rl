@@ -19,7 +19,7 @@ class Mario:
         self.gamma = 0.9
 
         self.curr_step = 0
-        self.burnin = 1e5  # min. experiences before training
+        self.burnin = 1e4  # min. experiences before training
         self.learn_every = 3   # no. of experiences between updates to Q_online
         self.sync_every = 1e4   # no. of experiences between Q_target & Q_online sync
 
@@ -81,9 +81,6 @@ class Mario:
         """
         state = np.array(state)
         next_state = np.array(next_state)
-        # action = np.array(action)
-        # reward = np.array(reward)
-        # done = np.array(done)
 
         state = torch.FloatTensor(state).cuda() if self.use_cuda else torch.FloatTensor(state)
         next_state = torch.FloatTensor(next_state).cuda() if self.use_cuda else torch.FloatTensor(next_state)

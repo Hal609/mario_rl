@@ -4,33 +4,37 @@ os.environ['KMP_DUPLICATE_LIB_OK']='True'
 import random, datetime
 from pathlib import Path
 
-import gym
-import gym_super_mario_bros
-from gym.wrappers import FrameStack, GrayScaleObservation, TransformObservation
-from nes_py.wrappers import JoypadSpace
-
+import gymnasium as gym
 from metrics import MetricLogger
 from agent import Mario
+
+from gymnasium.wrappers import GrayscaleObservation, ResizeObservation, TransformObservation, FrameStackObservation
+from smb_env_cynes import SuperMarioBrosEnv
+
+from joypad_space import JoypadSpace
+
+from metrics import MetricLogger
+
 from wrappers import ResizeObservation, SkipFrame
 
 # Initialize Super Mario environment
-env = gym_super_mario_bros.make('SuperMarioBros-1-1-v3')
+env = SuperMarioBrosEnv(rom_path='super-mario-bros-rectangle.nes', headless=False)
 
 # Limit the action-space to
 #   0. walk right
 #   1. jump right
 env = JoypadSpace(
     env,
-    [['right'],
-    ['right', 'A']]
+    [['right', 'B'],
+    ['right', 'B', 'A']]
 )
 
 # Apply Wrappers to environment
 env = SkipFrame(env, skip=4)
-env = GrayScaleObservation(env, keep_dim=False)
-env = ResizeObservation(env, shape=84)
-env = TransformObservation(env, f=lambda x: x / 255.)
-env = FrameStack(env, num_stack=4)
+env = GrayscaleObservation(env, keep_dim=False)
+env = ResizeObservation(env, (84, 84))
+env = TransformObservation(env, lambda x: x / 255., env.observation_space)
+env = FrameStackObservation(env, stack_size=4)
 
 env.reset()
 
@@ -47,14 +51,11 @@ episodes = 40000
 ### for Loop that train the model num_episodes times by playing the game
 for e in range(episodes):
 
-    state = env.reset()
+    state = env.reset()[0]
 
     # Play the game!
     while True:
-
-        # 3. Show environment (the visual) [WIP]
-        # env.render()
-
+        
         # 4. Run agent on the state
         action = mario.act(state)
 
