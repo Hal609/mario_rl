@@ -10,6 +10,7 @@ from agent import Mario
 
 from gymnasium.wrappers import GrayscaleObservation, ResizeObservation, TransformObservation, FrameStackObservation
 from smb_env_cynes import SuperMarioBrosEnv
+# import gym_smb_cynes
 
 from joypad_space import JoypadSpace
 
@@ -18,7 +19,13 @@ from metrics import MetricLogger
 from wrappers import ResizeObservation, SkipFrame
 
 # Initialize Super Mario environment
-env = SuperMarioBrosEnv(rom_path='super-mario-bros-rectangle.nes', headless=False)
+# env = SuperMarioBrosEnv(rom_path='super-mario-bros-rectangle.nes', headless=False)
+gym.register(
+    id="gymnasium_env/SMBEnv-v0",
+    entry_point=SuperMarioBrosEnv,
+)
+
+env = gym.make("gymnasium_env/SMBEnv-v0", rom_path="super-mario-bros-rectangle.nes", headless=False)
 
 # Limit the action-space to
 #   0. walk right
