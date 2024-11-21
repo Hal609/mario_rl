@@ -137,8 +137,8 @@ class NESEnv(gym.Env):
         self.screen = frame
 
     def close(self):
-        self.nes.close()
         if hasattr(self, 'window'):
+            self.nes.close()
             self.window.close()
 
 
